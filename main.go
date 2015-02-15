@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"net"
 	"strconv"
+	"strings"
 )
 
 func main() {
@@ -25,6 +27,13 @@ func main() {
 	_, err = conn.Write([]byte("LOGOUT"))
 	if err != nil {
 		fmt.Println("Error: could not connect to the server")
+		return
+	}
+
+	response, err := bufio.NewReader(conn).ReadString('\n')
+	resp := strings.Split(response, " ")
+	if resp[0] == "ERR" {
+		fmt.Println("Error: Server returned", resp[1])
 		return
 	}
 
