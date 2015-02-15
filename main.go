@@ -33,10 +33,9 @@ func main() {
 	response, err := bufio.NewReader(conn).ReadString('\n')
 	resp := strings.Split(response, " ")
 	if resp[0] == "ERR" {
-		fmt.Println("Error: Server returned", resp[1])
-		return
+		fmt.Print("Error: Server returned ", resp[1])
+	} else if resp[0] == "OK" {
+		fmt.Println("Logged out")
 	}
-
-	fmt.Println("Logged out")
 }
 
