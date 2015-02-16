@@ -25,6 +25,8 @@ func main() {
 
 	fmt.Println("Connected to", conn.RemoteAddr())
 
+	reader := bufio.NewReader(conn)
+
 	fmt.Println("Logging in...")
 	_, err = conn.Write([]byte("LOGIN " + *username + " " + *password))
 	if err != nil {
@@ -32,12 +34,31 @@ func main() {
 		return
 	}
 
-	response, err := bufio.NewReader(conn).ReadString('\n')
-	resp := strings.Split(response, " ")
-	if resp[0] == "ERR" {
-		fmt.Print("Error: Server returned ", resp[1])
-	} else if resp[0] == "OK" {
-		fmt.Println("Logged out")
+	ok, resp, err := ParseAnswer(reader)
+	if ok {
+		fmt.Println("Logged in")
+	} else {
+		fmt.Println("Error: Server returned", resp)
 	}
+
+	_, err = conn.Write([]byte("LOGOUT"))
+	ok, resp, err = ParseAnswer(reader)
+	if ok {
+		fmt.Println("Logged out")
+	} else {
+		fmt.Println("Error: Server returned", resp)
+	}
+}
+
+func ParseAnswer(r *bufio.Reader) (ok bool, answer string, err error) {
+	response, err := r.ReadString('\n')
+	resp := strings.Split(response, " ")
+	if resp[0] == "OK" {
+		ok = true
+	} else if resp[0] == "ERR" {
+		ok = false
+	}
+	answer = strings.Join(resp[1:], " ")
+	return
 }
 
