@@ -13,7 +13,7 @@ func main() {
 	ip := flag.String("ip", "localhost", "Server IP to connect to")
 	port := flag.Int("port", 1339, "Port to use on the server")
 	username := flag.String("user", "sulami", "Username to login")
-	password := flag.String("password", "", "Password to login")
+	password := flag.String("password", "123", "Password to login")
 	address := *ip + ":" + strconv.Itoa(*port)
 
 	fmt.Println("Connecting to", address + "...")
@@ -28,7 +28,7 @@ func main() {
 	reader := bufio.NewReader(conn)
 
 	fmt.Println("Logging in...")
-	_, err = conn.Write([]byte("LOGIN " + *username + " " + *password))
+	_, err = conn.Write([]byte("LOGIN " + *username + " " + *password + "\n"))
 	if err != nil {
 		fmt.Println("Error: could not connect to the server")
 		return
@@ -41,7 +41,8 @@ func main() {
 		fmt.Println("Error: Server returned", resp)
 	}
 
-	_, err = conn.Write([]byte("LOGOUT"))
+	fmt.Println("Logging out...")
+	_, err = conn.Write([]byte("LOGOUT\n"))
 	ok, resp, err = ParseAnswer(reader)
 	if ok {
 		fmt.Println("Logged out")
