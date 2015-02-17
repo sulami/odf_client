@@ -9,48 +9,63 @@ import (
 	"strings"
 )
 
-func main() {
-	ip := flag.String("ip", "localhost", "Server IP to connect to")
-	port := flag.Int("port", 1339, "Port to use on the server")
-	address := *ip + ":" + strconv.Itoa(*port)
+type Server struct {
+	Conn net.Conn
+	Reader *bufio.Reader
+	Writer *bufio.Writer
+}
 
-	fmt.Println("Connecting to", address + "...")
-	conn, err := net.Dial("tcp", address)
+func (s *Server) Connect(addr string) (err error) {
+	fmt.Println("Connecting to", addr)
+	s.Conn, err = net.Dial("tcp", addr)
 	if err != nil {
 		fmt.Println("Error: could not connect to the server")
 		return
+	} else {
+		fmt.Println("Connected to", s.Conn.RemoteAddr())
 	}
+	s.Reader = bufio.NewReader(s.Conn)
+	s.Writer = bufio.NewWriter(s.Conn)
 
-	fmt.Println("Connected to", conn.RemoteAddr())
+	go s.Read()
 
-	reader := bufio.NewReader(conn)
-
-	fmt.Println("Staring game...")
-	_, err = conn.Write([]byte("START\n"))
-	
-	if err != nil {
-		fmt.Println("Error: could not connect to the server")
-		return
-	}
-
-	fmt.Println("Exiting...")
-	conn.Write([]byte("EXIT\n")) // Why would we check the answer?
 	return
 }
 
-func ParseAnswer(r *bufio.Reader) (answer string, ok bool, err error) {
-	response, err := r.ReadString('\n')
+func (s *Server) Write(msg string) {
+	s.Writer.WriteString(msg + "\n")
+	s.Writer.Flush()
+}
+
+func (s *Server) Read() {
+	for {
+		response, err := s.Reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error:", err.Error())
+			continue
+		}
+		resp := strings.Split(response, " ")
+		if resp[0] == "OK" {
+			fmt.Println(strings.Join(resp[1:], " "))
+		} else if resp[0] == "ERR" {
+			fmt.Println("Error:", resp[1])
+		}
+	}
+}
+
+func main() {
+	ip := flag.String("ip", "localhost", "Server IP to connect to")
+	port := flag.Int("port", 1339, "Port to use on the server")
+
+	server := &Server{}
+	err := server.Connect(*ip + ":" + strconv.Itoa(*port))
 	if err != nil {
-		ok = false
 		return
 	}
-	resp := strings.Split(response, " ")
-	if resp[0] == "OK" {
-		ok = true
-	} else if resp[0] == "ERR" {
-		ok = false
-	}
-	answer = strings.Join(resp[1:], " ")
+
+	server.Write("START")
+	server.Write("EXIT")
+
 	return
 }
 
