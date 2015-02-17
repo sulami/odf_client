@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"net"
+	"os"
 	"strconv"
 	"strings"
 )
@@ -42,6 +43,9 @@ func (s *Server) Read() {
 		response, err := s.Reader.ReadString('\n')
 		if err != nil {
 			fmt.Println("Error:", err.Error())
+			if err.Error() == "EOF" {
+				os.Exit(0)
+			}
 			continue
 		}
 		resp := strings.Split(response, " ")
