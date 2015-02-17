@@ -57,8 +57,8 @@ func Read(s *Server) {
 	for {
 		var buf string
 		fmt.Scanln(&buf)
-		s.Write(buf)
-		if buf == "EXIT" {
+		s.Write(strings.ToUpper(buf))
+		if strings.ToUpper(buf) == "EXIT" {
 			break
 		}
 	}
