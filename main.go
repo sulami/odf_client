@@ -75,7 +75,5 @@ func main() {
 	}
 
 	Read(server)
-
-	return
 }
 
