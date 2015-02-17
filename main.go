@@ -67,6 +67,7 @@ func Read(s *Server) {
 func main() {
 	ip := flag.String("ip", "localhost", "Server IP to connect to")
 	port := flag.Int("port", 1339, "Port to use on the server")
+	flag.Parse()
 
 	server := &Server{}
 	err := server.Connect(*ip + ":" + strconv.Itoa(*port))
