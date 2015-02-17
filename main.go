@@ -12,8 +12,6 @@ import (
 func main() {
 	ip := flag.String("ip", "localhost", "Server IP to connect to")
 	port := flag.Int("port", 1339, "Port to use on the server")
-	username := flag.String("user", "sulami", "Username to login")
-	password := flag.String("password", "123", "Password to login")
 	address := *ip + ":" + strconv.Itoa(*port)
 
 	fmt.Println("Connecting to", address + "...")
@@ -27,28 +25,17 @@ func main() {
 
 	reader := bufio.NewReader(conn)
 
-	fmt.Println("Logging in...")
-	_, err = conn.Write([]byte("LOGIN " + *username + " " + *password + "\n"))
+	fmt.Println("Staring game...")
+	_, err = conn.Write([]byte("START\n"))
+	
 	if err != nil {
 		fmt.Println("Error: could not connect to the server")
 		return
 	}
 
-	ok, resp, err := ParseAnswer(reader)
-	if ok {
-		fmt.Println("Logged in")
-	} else {
-		fmt.Println("Error: Server returned", resp)
-	}
-
-	fmt.Println("Logging out...")
-	_, err = conn.Write([]byte("LOGOUT\n"))
-	ok, resp, err = ParseAnswer(reader)
-	if ok {
-		fmt.Println("Logged out")
-	} else {
-		fmt.Println("Error: Server returned", resp)
-	}
+	fmt.Println("Exiting...")
+	conn.Write([]byte("EXIT\n")) // Why would we check the answer?
+	return
 }
 
 func ParseAnswer(r *bufio.Reader) (ok bool, answer string, err error) {
