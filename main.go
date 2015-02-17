@@ -53,6 +53,17 @@ func (s *Server) Read() {
 	}
 }
 
+func Read(s *Server) {
+	for {
+		var buf string
+		fmt.Scanln(&buf)
+		s.Write(buf)
+		if buf == "EXIT" {
+			break
+		}
+	}
+}
+
 func main() {
 	ip := flag.String("ip", "localhost", "Server IP to connect to")
 	port := flag.Int("port", 1339, "Port to use on the server")
@@ -63,8 +74,7 @@ func main() {
 		return
 	}
 
-	server.Write("START")
-	server.Write("EXIT")
+	Read(server)
 
 	return
 }
