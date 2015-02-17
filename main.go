@@ -38,8 +38,12 @@ func main() {
 	return
 }
 
-func ParseAnswer(r *bufio.Reader) (ok bool, answer string, err error) {
+func ParseAnswer(r *bufio.Reader) (answer string, ok bool, err error) {
 	response, err := r.ReadString('\n')
+	if err != nil {
+		ok = false
+		return
+	}
 	resp := strings.Split(response, " ")
 	if resp[0] == "OK" {
 		ok = true
