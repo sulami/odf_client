@@ -44,13 +44,16 @@ func (s *Server) Read() {
 		if err != nil {
 			fmt.Println("Error:", err.Error())
 			if err.Error() == "EOF" {
-				os.Exit(0)
+				os.Exit(1)
 			}
 			continue
 		}
 		resp := strings.Split(response, " ")
 		if resp[0] == "OK" {
 			fmt.Println(strings.Join(resp[1:], " "))
+			if resp[1] == "BYE\n" {
+				os.Exit(0)
+			}
 		} else if resp[0] == "ERR" {
 			fmt.Println("Error:", resp[1])
 		}
@@ -62,9 +65,6 @@ func Read(s *Server) {
 		var buf string
 		fmt.Scanln(&buf)
 		s.Write(strings.ToUpper(buf))
-		if strings.ToUpper(buf) == "EXIT" {
-			break
-		}
 	}
 }
 
