@@ -50,12 +50,14 @@ func (s *Server) Read() {
 		}
 		resp := strings.Split(response, " ")
 		if resp[0] == "OK" {
-			fmt.Println(strings.Join(resp[1:], " "))
+			fmt.Print(strings.Join(resp[1:], " "))
 			if resp[1] == "BYE\n" {
 				os.Exit(0)
 			}
+		} else if resp[0] == "UPD" {
+			fmt.Print(resp[1])
 		} else if resp[0] == "ERR" {
-			fmt.Println("Error:", resp[1])
+			fmt.Print("Error:", resp[1])
 		}
 	}
 }
