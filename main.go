@@ -66,9 +66,12 @@ func (s *Server) Read() {
 
 func Read(s *Server) {
 	for {
-		var buf string
-		fmt.Scanln(&buf)
-		s.Write(strings.ToUpper(buf))
+		r := bufio.NewReader(os.Stdin)
+		buf, err := r.ReadString('\n')
+		if err != nil {
+			fmt.Println("Internal Error:", err.Error())
+		}
+		s.Write(buf)
 	}
 }
 
