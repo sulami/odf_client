@@ -54,10 +54,12 @@ func (s *Server) Read() {
 			if resp[1] == "BYE\n" {
 				os.Exit(0)
 			}
+		} else if resp[0] == "QRY" {
+			fmt.Print("Enter ", resp[1])
 		} else if resp[0] == "UPD" {
 			fmt.Print(resp[1])
 		} else if resp[0] == "ERR" {
-			fmt.Print("Error:", resp[1])
+			fmt.Print("Error: ", resp[1])
 		}
 	}
 }
